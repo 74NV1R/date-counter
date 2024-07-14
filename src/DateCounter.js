@@ -1,35 +1,57 @@
-import { useState } from "react";
+import { useReducer, useState } from "react"
+
+function reducer(state, action) {
+  console.log(state, action)
+  if (action.type === "increment") return state + 1
+  if (action.type === "decrement") return state - 1
+  if (action.type === "set") return action.payload
+}
 
 function DateCounter() {
-  const [count, setCount] = useState(0);
-  const [step, setStep] = useState(1);
+  //const [count, setCount] = useState(0)
+
+  const [count, dispatch] = useReducer(reducer, 0)
+
+  const [step, setStep] = useState(1)
 
   // This mutates the date object.
-  const date = new Date("june 21 2027");
-  date.setDate(date.getDate() + count);
+  const date = new Date("june 21 2027")
+  date.setDate(date.getDate() + count)
 
   const dec = function () {
+    dispatch({
+      type: "decrement",
+    })
     // setCount((count) => count - 1);
-    setCount((count) => count - step);
-  };
+    //setCount((count) => count - step)
+  }
 
   const inc = function () {
     // setCount((count) => count + 1);
-    setCount((count) => count + step);
-  };
+    //setCount((count) => count + step)
+
+    dispatch({
+      type: "increment",
+    })
+  }
 
   const defineCount = function (e) {
-    setCount(Number(e.target.value));
-  };
+    //setCount(Number(e.target.value))
+
+    dispatch({
+      type: "set",
+      payload: Number(e.target.value),
+    })
+  }
 
   const defineStep = function (e) {
-    setStep(Number(e.target.value));
-  };
+    setStep(Number(e.target.value))
+  }
 
   const reset = function () {
-    setCount(0);
-    setStep(1);
-  };
+    //setCount(0)
+    setStep(1)
+  }
 
   return (
     <div className="counter">
@@ -56,6 +78,6 @@ function DateCounter() {
         <button onClick={reset}>Reset</button>
       </div>
     </div>
-  );
+  )
 }
-export default DateCounter;
+export default DateCounter
