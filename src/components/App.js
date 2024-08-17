@@ -7,13 +7,15 @@ import StartScreen from "./StartScreen"
 import Question from "./Question"
 import NextButton from "./NextButton"
 import Progress from "./Progress"
+import Finished from "./Finished"
 
 const initialState = {
   questions: [],
   status: 'loading', //loading, error, ready, active, finished
   index: 0,
   answer: null,
-  points: 0
+  points: 0,
+  highscore: 0
 }
 
 function reducer(state, action) {
@@ -55,6 +57,21 @@ function reducer(state, action) {
         answer: null
       }
 
+    case "resetQuiz":
+      return {
+        ...state,
+        index: 0,
+        answer: null,
+        points: 0
+      }
+
+    case 'finished':
+      return {
+        ...state,
+        status: 'finished',
+        highscore: state.points > state.highscore ? state.points : state.highscore
+      }
+
     default:
       throw new Error('Unknown action')
   }
@@ -88,9 +105,12 @@ export default function App() {
           <>
             <Progress index={index} numQuestions={numQuestions} points={points} maxPoints={maxPoints} answer={answer} />
             <Question question={questions[index]} dispatch={dispatch} answer={answer} />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
+            <button onClick={() => dispatch({ type: "resetQuiz" })}>Reset Quiz</button>
           </>)
         }
+
+        {status === 'finished' && <Finished points={points} maxPoints={maxPoints} highscore={highscore} />}
 
       </Main>
     </div>
