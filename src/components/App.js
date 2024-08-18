@@ -8,6 +8,10 @@ import Question from "./Question"
 import NextButton from "./NextButton"
 import Progress from "./Progress"
 import Finished from "./Finished"
+import Timer from "./Timer"
+import Footer from "./Footer"
+
+const secondPerQuestion = 30
 
 const initialState = {
   questions: [],
@@ -15,7 +19,8 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
-  highscore: 0
+  highscore: 0,
+  timeRemaining: null
 }
 
 function reducer(state, action) {
@@ -37,7 +42,8 @@ function reducer(state, action) {
     case 'start':
       return {
         ...state,
-        status: 'active'
+        status: 'active',
+        timeRemaining: state.questions.length * secondPerQuestion
       }
 
     case 'newAnswer':
@@ -59,17 +65,30 @@ function reducer(state, action) {
 
     case "resetQuiz":
       return {
-        ...state,
-        index: 0,
-        answer: null,
-        points: 0
+        ...initialState,
+        questions: state.questions,
+        status: 'ready'
       }
+    /*       return {
+            ...state,
+            points: 0,
+            highscore: 0,
+            index: 0,
+            answer: null,
+            status: 'ready'
+          } */
 
     case 'finished':
       return {
         ...state,
         status: 'finished',
         highscore: state.points > state.highscore ? state.points : state.highscore
+      }
+    case 'pulse':
+      return {
+        ...state,
+        timeRemaining: state.timeRemaining - 1,
+        status: state.timeRemaining === 0 ? 'finished' : state.status
       }
 
     default:
@@ -79,7 +98,7 @@ function reducer(state, action) {
 
 export default function App() {
 
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(reducer, initialState)
+  const [{ questions, status, index, answer, points, highscore, timeRemaining }, dispatch] = useReducer(reducer, initialState)
 
   const numQuestions = questions.length
   const maxPoints = questions.reduce((prev, curr) => prev + curr.points, 0)
@@ -105,12 +124,15 @@ export default function App() {
           <>
             <Progress index={index} numQuestions={numQuestions} points={points} maxPoints={maxPoints} answer={answer} />
             <Question question={questions[index]} dispatch={dispatch} answer={answer} />
-            <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
-            <button onClick={() => dispatch({ type: "resetQuiz" })}>Reset Quiz</button>
+            <Footer>
+              <Timer dispatch={dispatch} timeRemaining={timeRemaining} />
+              <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
+            </Footer>
+
           </>)
         }
 
-        {status === 'finished' && <Finished points={points} maxPoints={maxPoints} highscore={highscore} />}
+        {status === 'finished' && <Finished points={points} maxPoints={maxPoints} highscore={highscore} dispatch={dispatch} />}
 
       </Main>
     </div>
