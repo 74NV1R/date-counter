@@ -1,6 +1,8 @@
 import React from 'react'
+import { useQuestions } from '../contexts/QuestionContext'
 
-export default function StartScreen({ numQuestions, dispatch }) {
+export default function StartScreen() {
+    const { start, numQuestions, dispatch } = useQuestions()
     return (
         <div>
             <h2>React quiz

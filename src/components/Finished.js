@@ -1,6 +1,8 @@
 import React from 'react'
+import { useQuestions } from '../contexts/QuestionContext'
 
-export default function Finished({ points, maxPoints, highscore, dispatch }) {
+export default function Finished() {
+    const { points, maxPoints, highscore, dispatch } = useQuestions()
     return (
         <div>
             <p className='result'>
@@ -8,7 +10,7 @@ export default function Finished({ points, maxPoints, highscore, dispatch }) {
                 <b>{points} out of {maxPoints}!</b> <br></br>
                 highscore: {highscore}
             </p>
-            <button className='btn btn-ui' onClick={() => dispatch({ type: "resetQuiz" })}>Reset Quiz</button>
+            <button className='btn btn-ui' onClick={() => dispatch({ type: 'resetQuiz' })}>Reset Quiz</button>
         </div>
     )
 }
